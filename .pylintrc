@@ -1,0 +1,12 @@
+[MASTER]
+extension-pkg-whitelist=pydantic
+
+[MESSAGES CONTROL]
+disable=logging-fstring-interpolation
+
+[MISCELLANEOUS]
+notes=FIXME,XXX
+
+[SIMILARITIES]
+ignore-imports=yes
+min-similarity-lines=15

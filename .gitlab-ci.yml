@@ -1,0 +1,14 @@
+image:
+  name: idockerhub.jd.com/library/alpine:3.6
+  entrypoint: ["/bin/sh", "-c"]
+
+stages:
+  - lint_test
+
+lint:
+  stage: lint_test
+  image: idockerhub.jd.com/uc-library/python3.8-lint-test:latest
+  script:
+    - make lint
+  only:
+    - merge_requests
