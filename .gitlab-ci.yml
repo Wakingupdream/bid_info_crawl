@@ -9,6 +9,8 @@ lint:
   stage: lint_test
   image: idockerhub.jd.com/uc-library/python3.8-lint-test:latest
   script:
+    - pip install --no-cache-dir -r requirements.txt
+    - pip install --no-cache-dir -r requirements-dev.txt
     - make lint
   only:
     - merge_requests
