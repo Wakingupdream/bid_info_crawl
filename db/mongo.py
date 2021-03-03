@@ -4,12 +4,9 @@
 """Mongo DB."""
 
 from motor.motor_asyncio import AsyncIOMotorClient
-from uc_log import UCLog
 
 from settings import SETTINGS
-
-
-LOG = UCLog().logger
+from utils.log import LOG
 
 
 class Database:
