@@ -16,7 +16,7 @@ def get_instance():
             f"{__name__}.{SETTINGS.db_type_scheduler.lower()}")
     except ImportError as error:
         LOG.error(error)
-    return module_instance.UcCrawlerStorage
+    return module_instance.CCGPBidInfoStorage
 
 
-UC_CRAWLER_STORAGE = get_instance()
+CCGP_CRAWLER_STORAGE = get_instance()
