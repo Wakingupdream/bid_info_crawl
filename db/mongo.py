@@ -20,7 +20,7 @@ class Database:
         if SETTINGS.db_mongo_uri:
             cls.client = AsyncIOMotorClient(SETTINGS.db_mongo_uri)
         else:
-            LOG.info("Connection failed.")
+            LOG.error("Connection failed.")
 
     @classmethod
     def disconnect(cls):

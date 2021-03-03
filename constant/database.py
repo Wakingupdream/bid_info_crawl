@@ -3,4 +3,4 @@
 """The constants for database."""
 
 
-DATABASE_NAME = "uc_crawler"
+DATABASE_NAME = "uc_crawler_ccgp"

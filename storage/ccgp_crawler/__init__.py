@@ -15,7 +15,7 @@ def get_instance():
         module_instance = importlib.import_module(
             f"{__name__}.{SETTINGS.db_type_scheduler.lower()}")
     except ImportError as error:
-        LOG.info(repr(error))
+        LOG.error(error)
     return module_instance.UcCrawlerStorage
 
 
