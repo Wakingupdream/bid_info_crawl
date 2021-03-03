@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     """Setting for task scheduler."""
 
     # pylint: disable=too-few-public-methods
+    db_mongo_uri: str = None
     db_type_scheduler: str = settings.DB_TYPE_MONGO
     debug: bool = True
 
