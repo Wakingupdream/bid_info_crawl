@@ -5,12 +5,8 @@
 
 import importlib
 
-from uc_log import UCLog
-
 from settings import SETTINGS
-
-
-LOG = UCLog().logger
+from utils.log import LOG
 
 
 def get_instance():
