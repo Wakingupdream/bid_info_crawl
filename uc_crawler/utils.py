@@ -9,6 +9,7 @@ import time
 import requests
 from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
+from tqdm import tqdm
 
 from constant import crawler
 from utils.log import LOG
@@ -49,7 +50,7 @@ def re_connect(elem_bid_list, ss_l, params_l, page_index, sec=1):
     return re_connect(elem_bid_list, ss_l, params_l, page_index, sec + 1)
 
 
-def get_page_data(ua_l, ss_l, params, page_index):  # TODO:注意调用的时候参数及位置
+def get_one_page_data(ua_l, ss_l, params, page_index):  # TODO:注意调用的时候参数及位置
     """
     Extract page info from key word searching result.
 
@@ -88,3 +89,26 @@ def get_page_data(ua_l, ss_l, params, page_index):  # TODO:注意调用的时候
             info_dic["province"].append(i_b_a_p[3].strip())
     except ValueError:
         LOG.error("li_list is None.")
+    return info_dic
+
+
+def get_all_pages_data(key_word, params):
+    """Get information on all its search pages according to one keyword."""
+    page_num = get_page_num(key_word)
+    # res = {"url": [], "type": [], "header": [], "time": [], "buyer": [],
+    #        "agency": [], "province": []}
+    info_dic = {}
+    for name in crawler.INFO_NAME:
+        info_dic[name] = []
+    with tqdm(total=page_num) as tqdm_bar:
+        for page in range(1, page_num + 1):
+            ua_l = UserAgent()
+            ss_l = requests.session()
+            params_l = params
+            params_l["kw"] = key_word
+            one_page_data = get_one_page_data(ua_l, ss_l, params_l, page)
+            for key in one_page_data:
+                info_dic[key] += one_page_data[key]
+        tqdm_bar.update()
+    # TODO: write to db
+    LOG.info(f"{key_word} finished")
