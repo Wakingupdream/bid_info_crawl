@@ -112,3 +112,21 @@ def get_all_pages_data(key_word, params):
         tqdm_bar.update()
     # TODO: write to db
     LOG.info(f"{key_word} finished")
+
+
+def get_total_from_url(url):
+    """Get the bid amount from the url."""
+    ua_l = UserAgent()
+    ss_l = requests.session()
+    ss_l.headers["User-Agent"] = ua_l.random
+    res_l = ss_l.get(url)
+    time.sleep(1)
+    soup = BeautifulSoup(res_l.content, "html.parser")
+    for short_text in soup.find("div",
+                                attrs={"class": "vF_detail_content"}) \
+            .find_all("p"):
+        match = re.search(r"(预算|成交|中标|（预算）|（成交）|（中标）)金额：(.*)",
+                          short_text.text)
+        if match:
+            return match[2]
+    return None
