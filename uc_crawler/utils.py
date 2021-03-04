@@ -15,7 +15,7 @@ from constant import crawler
 from utils.log import LOG
 
 
-def get_page_num(params):  # TODO:注意调用的时候参数及位置,params 要添加key_word
+def get_page_num(params):
     """Get total page num according to specific keyword."""
     ua_l = UserAgent()
     ss_l = requests.session()
@@ -25,7 +25,7 @@ def get_page_num(params):  # TODO:注意调用的时候参数及位置,params �
     res_l = ss_l.get(url_l, params=params_l)
     soup_l = BeautifulSoup(res_l.text, "html.parser")
     if soup_l.find("p", attrs={"class": "pager"}) is None:
-        LOG.info(f"{params['kw']}页数为空")
+        LOG.warning(f"{params['kw']}页数为空")
         sys.exit()
     page_num = re.search("size:(.*),",
                          soup_l.find("p", attrs={"class": "pager"}).find(
@@ -50,7 +50,7 @@ def re_connect(elem_bid_list, ss_l, params_l, page_index, sec=1):
     return re_connect(elem_bid_list, ss_l, params_l, page_index, sec + 1)
 
 
-def get_one_page_data(ua_l, ss_l, params, page_index):  # TODO:注意调用的时候参数及位置
+def get_one_page_data(ua_l, ss_l, params, page_index):
     """
     Extract page info from key word searching result.
 
@@ -94,9 +94,9 @@ def get_one_page_data(ua_l, ss_l, params, page_index):  # TODO:注意调用的�
 
 def get_all_pages_data(key_word, params):
     """Get information on all its search pages according to one keyword."""
-    page_num = get_page_num(key_word)
-    # res = {"url": [], "type": [], "header": [], "time": [], "buyer": [],
-    #        "agency": [], "province": []}
+    params_l = params
+    params_l["kw"] = key_word
+    page_num = get_page_num(params_l)
     info_dic = {}
     for name in crawler.INFO_NAME:
         info_dic[name] = []
@@ -104,8 +104,6 @@ def get_all_pages_data(key_word, params):
         for page in range(1, page_num + 1):
             ua_l = UserAgent()
             ss_l = requests.session()
-            params_l = params
-            params_l["kw"] = key_word
             one_page_data = get_one_page_data(ua_l, ss_l, params_l, page)
             for key in one_page_data:
                 info_dic[key] += one_page_data[key]
