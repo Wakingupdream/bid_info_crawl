@@ -9,7 +9,7 @@ from settings import SETTINGS
 
 
 DB_SET = {
-    SETTINGS.db_type_scheduler.lower(),
+    SETTINGS.db_type_ccgp_crawler.lower(),
 }
 
 
