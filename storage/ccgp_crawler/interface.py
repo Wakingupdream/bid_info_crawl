@@ -6,11 +6,11 @@ from abc import ABC
 from abc import abstractmethod
 
 
-class CCGPCrawlerStorageInterface(ABC):
-    """CCGP crawler storage interface."""
+class CCGPBidInfoStorageInterface(ABC):
+    """CCGP bid info storage interface."""
 
     # pylint: disable=too-few-public-methods
     @staticmethod
     @abstractmethod
     async def create(db_collection, create_model):
-        """Create one CCGP crawler storage interface."""
+        """Create one CCGP bid info storage interface."""

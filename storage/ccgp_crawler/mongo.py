@@ -5,13 +5,13 @@
 from constant import database
 from db.mongo import Database
 from schemas.crawler import CCGPBidInfoInDB
-from storage.ccgp_crawler.interface import CCGPCrawlerStorageInterface
+from storage.ccgp_crawler.interface import CCGPBidInfoStorageInterface
 
 
 DATABASE_NAME = database.DATABASE_NAME
 
 
-class CCGPBidInfoStorage(CCGPCrawlerStorageInterface):
+class CCGPBidInfoStorage(CCGPBidInfoStorageInterface):
     """Implement storage of CCGP bid info."""
 
     # pylint: disable=too-few-public-methods

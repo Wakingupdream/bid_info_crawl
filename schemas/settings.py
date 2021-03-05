@@ -8,11 +8,11 @@ from constant import settings
 
 
 class Settings(BaseSettings):
-    """Setting for task scheduler."""
+    """Setting for CCGP Crawler."""
 
     # pylint: disable=too-few-public-methods
     db_mongo_uri: str = None
-    db_type_scheduler: str = settings.DB_TYPE_MONGO
+    db_type_ccgp_crawler: str = settings.DB_TYPE_MONGO
     debug: bool = True
 
     class Config:
