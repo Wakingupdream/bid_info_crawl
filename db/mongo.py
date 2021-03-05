@@ -4,12 +4,9 @@
 """Mongo DB."""
 
 from motor.motor_asyncio import AsyncIOMotorClient
-from uc_log import UCLog
 
 from settings import SETTINGS
-
-
-LOG = UCLog().logger
+from utils.log import LOG
 
 
 class Database:
@@ -23,7 +20,7 @@ class Database:
         if SETTINGS.db_mongo_uri:
             cls.client = AsyncIOMotorClient(SETTINGS.db_mongo_uri)
         else:
-            LOG.info("Connection failed.")
+            LOG.error("Connection failed.")
 
     @classmethod
     def disconnect(cls):

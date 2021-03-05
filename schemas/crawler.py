@@ -10,10 +10,9 @@ from pydantic import HttpUrl
 from constant import description
 
 
-class Crawler(BaseModel):
-    """Schema for Crawler in the database."""
+class CCGPBidInfoInDB(BaseModel):
+    """Schema of CCGP bid info."""
 
-    # Specific schema.
     agency: str = Field(None, description=description.AGENCY)
     amount: str = Field(None, description=description.AMOUNT)
     buyer: str = Field(None, description=description.BUYER)
