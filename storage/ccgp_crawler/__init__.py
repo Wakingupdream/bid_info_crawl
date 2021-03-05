@@ -13,7 +13,7 @@ def get_instance():
     """Return a uc_crawler storage."""
     try:
         module_instance = importlib.import_module(
-            f"{__name__}.{SETTINGS.db_type_scheduler.lower()}")
+            f"{__name__}.{SETTINGS.db_type_ccgp_crawler.lower()}")
     except ImportError as error:
         LOG.error(error)
     return module_instance.CCGPBidInfoStorage
