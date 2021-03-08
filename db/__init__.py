@@ -13,17 +13,17 @@ DB_SET = {
 }
 
 
-async def connect():
+def connect():
     """DB connect."""
     if DB_TYPE_MONGO.lower() in DB_SET:
         module_instance = importlib.import_module(
             f"{__name__}.{DB_TYPE_MONGO.lower()}")
-        await module_instance.Database.connect()
+        module_instance.Database.connect()
 
 
-async def disconnect():
+def disconnect():
     """DB disconnect."""
     if DB_TYPE_MONGO.lower() in DB_SET:
         module_instance = importlib.import_module(
             f"{__name__}.{DB_TYPE_MONGO.lower()}")
-        await module_instance.Database.disconnect()
+        module_instance.Database.disconnect()

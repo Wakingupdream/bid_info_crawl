@@ -8,12 +8,12 @@ import datetime
 START_TIME = datetime.datetime.now().strftime("%Y:%m:%d")
 END_TIME = datetime.datetime.now().strftime("%Y:%m:%d")
 ERROR_RESPONSE_COUNT = 0
-INFO_NAME = ["page_url", "project_name", "bid_type", "issue_time", "buyer",
-             "agency", "province"]
+INFO_NAME = ["URL", "PROJECT_NAME", "BID_TYPE", "ISSUE_TIME", "BUYER",
+             "AGENCY", "PROVINCE", "AMOUNT", "KEYWORD"]
 URL = "http://search.ccgp.gov.cn/bxsearch"
 KEY_WORDS = ["社区", "智能社区", "智慧社区", "商业街", "商圈", "智能商圈", "步行街",
              "景区", "智能景区", "智慧景区", "文旅", "机场", "智慧文旅"]
-PARAMETER = params_l = {
+PARAMETER = {
     "searchtype": 1,
     "page_index": 1,
     "bidSort": 0,
@@ -31,3 +31,9 @@ PARAMETER = params_l = {
     "pppStatus": 0,
     "agentName": None,
 }
+RE_AGENCY = "代理机构：(.*)\r"
+RE_AMOUNT = "(预算|成交|中标|（预算）|（成交）|（中标）)金额(（元）|（万元）)?：(.*)"
+RE_BUYER = "采购人：(.*)"
+# RE_PAGE = re.compile("size:(.*),")
+RE_PAGE = "size:(.*),"
+SESSION_UA = "User-Agent"

@@ -16,8 +16,8 @@ class CCGPBidInfoStorage(CCGPBidInfoStorageInterface):
 
     # pylint: disable=too-few-public-methods
     @staticmethod
-    async def create(db_collection, create_model: CCGPBidInfoInDB):
+    def create(db_collection, create_model: CCGPBidInfoInDB):
         """Create a CCPG bid info entry."""
         input_model = create_model.dict(exclude_none=True)
-        await Database.client[DATABASE_NAME][db_collection].insert_one(
+        Database.client[DATABASE_NAME][db_collection].insert_one(
             input_model)
