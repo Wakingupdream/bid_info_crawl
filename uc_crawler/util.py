@@ -35,18 +35,28 @@ def get_response(params):
     """Return the response of session.get ."""
     sec = 1
     while True:
-        if sec == 10:
-            LOG.error("Unresolved Problem.\n")
-            return None
         time.sleep(sec)
         try:
             res = SS.get(crawler.URL, params=params)
-        except requests.exceptions.ProxyError:
+
+        except requests.exceptions.ProxyError as exc:
+            LOG.info(f"{exc}")
+            LOG.info("*" * 80)
+            LOG.info(f"{res.status_code}")
+            LOG.info(f"{res.text}")
+            LOG.info(f"{params}")
+            LOG.error("Unresolved Problem.\n")
             SS.headers[crawler.SESSION_UA] = UA.ramdom
             continue
         if len(res.history) == 0:  # todo: Wrong.
             return res
         sec += 1
+        if sec == 10:
+            LOG.info(f"{res.status_code}")
+            LOG.info(f"{res.text}")
+            LOG.info(f"{params}")
+            LOG.error("Unresolved Problem.\n")
+            return None
 
 
 def get_one_page_data(params, page_index):
@@ -68,20 +78,19 @@ def get_one_page_data(params, page_index):
         for elem_bid in li_list:
             issue_time, buyer, agency, province = elem_bid.span.text.split(
                 "|")[:4]
-            info_dic = {"url": elem_bid.a["href"],
-                        "bid_type": elem_bid.span.strong.text.split(),
-                        "project_name": "".join(
-                            elem_bid.find("a").text.strip()),
-                        "issue_time": issue_time.strip(),
-                        "buyer": re.search(crawler.RE_BUYER,
-                                           buyer.strip()).group(1),
-                        "agency": re.search(crawler.RE_AGENCY,
-                                            agency.strip()).group(1),
-                        "province": province.strip(),
-                        "amount": get_total_from_url(elem_bid.a["href"]),
-                        "keyword": params["kw"]}
+            info_dic = {
+                "url": elem_bid.a["href"],
+                "bid_type": elem_bid.span.strong.text.split(),
+                "project_name": "".join(elem_bid.find("a").text.strip()),
+                "issue_time": issue_time.strip(),
+                "buyer": re.search(crawler.RE_BUYER, buyer.strip()).group(1),
+                "agency": re.search(crawler.RE_AGENCY,
+                                    agency.strip()).group(1),
+                "province": province.strip(),
+                "amount": get_total_from_url(elem_bid.a["href"]),
+                "keyword": params["kw"]}
             CCGP_CRAWLER_STORAGE.create("TEST_collection",
-                                        CCGPBidInfoInDB(**info_dic))
+                                        CCGPBidInfoInDB(**info_dic))  # todo:
     except ValueError:
         LOG.error("li_list is None.")
 
