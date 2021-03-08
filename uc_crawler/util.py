@@ -27,18 +27,19 @@ def get_page_num(params):
     return int(page_num)
 
 
-def re_connect(elem_bid_list, params, page_index, sec=1):
-    """Reconnect when the page is not loaded because the visit is too fast."""
-    if elem_bid_list:
-        return elem_bid_list
-    if sec == 5:
-        sec = 1
-    res = SS.get(crawler.URL, params=params)
-    time.sleep(sec)
-    LOG.info(res, page_index)
-    soup = BeautifulSoup(res.text, "html.parser")
-    elem_bid_list = soup.find("ul", attrs={"class": "vT-srch-result-list-bid"})
-    return re_connect(elem_bid_list, params, page_index, sec + 1)
+def get_response(params):
+    """Return the response of session.get ."""
+    sec = 1
+    while True:
+        time.sleep(sec)
+        res = SS.get(crawler.URL, params=params)
+        if len(res.history) == 0:
+            return res
+        if sec == 10:
+            LOG.error(f"Unresolved Problem.\n"
+                      f"res.status_code is{res.status_code}")
+            return None
+        sec += 1
 
 
 def get_one_page_data(params, page_index):
@@ -51,15 +52,13 @@ def get_one_page_data(params, page_index):
     info_dic = {}
     for name in crawler.INFO_NAME:
         info_dic[name] = []
-
     params["page_index"] = page_index
-    res = SS.get(crawler.URL, params=params)
-    LOG.info(res, page_index)
+    res = get_response(params)
+    if res is None:
+        crawler.ERROR_RESPONSE_COUNT += 1
+        return info_dic
     soup = BeautifulSoup(res.text, "html.parser")
     elem_bid_list = soup.find("ul", attrs={"class": "vT-srch-result-list-bid"})
-    if elem_bid_list is None:
-        elem_bid_list = re_connect(elem_bid_list, params, page_index,
-                                   sec=2)
     li_list = elem_bid_list.find_all("li")
     try:
         for elem_bid in li_list:

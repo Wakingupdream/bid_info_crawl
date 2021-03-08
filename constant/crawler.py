@@ -7,6 +7,7 @@ import datetime
 
 START_TIME = datetime.datetime.now().strftime("%Y:%m:%d")
 END_TIME = datetime.datetime.now().strftime("%Y:%m:%d")
+ERROR_RESPONSE_COUNT = 0
 INFO_NAME = ["page_url", "project_name", "bid_type", "issue_time", "buyer",
              "agency", "province"]
 URL = "http://search.ccgp.gov.cn/bxsearch"
@@ -22,7 +23,7 @@ PARAMETER = params_l = {
     "bidType": 0,
     "dbselect": "bidx",
     "kw": None,
-    "start_time": START_TIME,  # TODO(wangyu/crawl_code):Need modify.
+    "start_time": START_TIME,  # TODO(wangyu/crawl_code):Maybe need modify.
     "end_time": END_TIME,
     "timeType": 5,
     "displayZone": None,
