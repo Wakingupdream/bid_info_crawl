@@ -6,8 +6,6 @@ import datetime
 import re
 
 
-START_TIME = datetime.datetime.now().strftime("%Y:%m:%d")
-END_TIME = datetime.datetime.now().strftime("%Y:%m:%d")
 ERROR_RESPONSE_COUNT = 0
 F_AGENCY = "agency"
 F_AMOUNT = "amount"
@@ -19,9 +17,8 @@ F_PROJECT_NAME = "project_name"
 F_PROVINCE = "province"
 F_UPDATE_TIME = "update_time"
 F_URL = "url"
-URL = "http://search.ccgp.gov.cn/bxsearch"
-KEY_WORDS = ["社区", "智能社区", "智慧社区", "商业街", "商圈", "智能商圈", "步行街",
-             "景区", "智能景区", "智慧景区", "文旅", "机场", "智慧文旅"]
+KEY_WORDS = ["社区", "智能社区", "智慧社区", "商业街", "商圈", "智能商圈", "步行街", "景区", "智能景区",
+             "智慧景区", "文旅", "机场", "智慧文旅"]
 PARAMETER = {
     "searchtype": 1,
     "page_index": 1,
@@ -32,8 +29,8 @@ PARAMETER = {
     "bidType": 0,
     "dbselect": "bidx",
     "kw": None,
-    "start_time": START_TIME,
-    "end_time": END_TIME,
+    "start_time": datetime.datetime.now().strftime("%Y:%m:%d"),
+    "end_time": datetime.datetime.now().strftime("%Y:%m:%d"),
     "timeType": 5,  # TODO(wangyu):Set as parameter.
     "displayZone": None,
     "zoneId": None,
@@ -46,3 +43,4 @@ RE_AMOUNT = re.compile("(预算|成交|中标|（预算）|（成交）|（中�
 RE_BUYER = re.compile("采购人：(.*)")
 RE_PAGE = re.compile("size:(.*),")
 SESSION_UA = "User-Agent"
+URL = "http://search.ccgp.gov.cn/bxsearch"

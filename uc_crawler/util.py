@@ -45,7 +45,6 @@ def get_response(params):
             res = SS.get(crawler.URL, params=params)
         except requests.exceptions.ProxyError as exc:
             LOG.info(f"{exc}")
-            LOG.info("*" * 80)
             LOG.info(f"{params}")
             LOG.error("Unresolved Problem.\n")
             SS.headers[crawler.SESSION_UA] = UA.ramdom
