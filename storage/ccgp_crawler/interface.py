@@ -12,5 +12,5 @@ class CCGPBidInfoStorageInterface(ABC):
     # pylint: disable=too-few-public-methods
     @staticmethod
     @abstractmethod
-    def create(db_collection, create_model):
+    async def create(db_collection, create_model):
         """Create one CCGP bid info storage interface."""

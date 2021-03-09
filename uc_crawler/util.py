@@ -11,6 +11,7 @@ from bs4 import BeautifulSoup
 from tqdm import tqdm
 
 from constant import crawler
+from db import connect
 from schemas.crawler import CCGPBidInfoInDB
 from storage.ccgp_crawler import CCGP_CRAWLER_STORAGE
 from uc_crawler import SS
@@ -59,7 +60,7 @@ def get_response(params):
             return None
 
 
-def get_one_page_data(params, page_index):
+async def get_one_page_data(params, page_index):
     """
     Extract page info from key word searching result.
 
@@ -74,41 +75,39 @@ def get_one_page_data(params, page_index):
     soup = BeautifulSoup(res.text, "html.parser")
     elem_bid_list = soup.find("ul", attrs={"class": "vT-srch-result-list-bid"})
     li_list = elem_bid_list.find_all("li")
-    try:
-        for elem_bid in li_list:
-            issue_time, buyer, agency, province = elem_bid.span.text.split(
-                "|")[:4]
-            info_dic = {
-                "url": elem_bid.a["href"],
-                "bid_type": elem_bid.span.strong.text.split(),
-                "project_name": "".join(elem_bid.find("a").text.strip()),
-                "issue_time": issue_time.strip(),
-                "buyer": re.search(crawler.RE_BUYER, buyer.strip()).group(1),
-                "agency": re.search(crawler.RE_AGENCY,
-                                    agency.strip()).group(1),
-                "province": province.strip(),
-                "amount": get_total_from_url(elem_bid.a["href"]),
-                "keyword": params["kw"]}
-            CCGP_CRAWLER_STORAGE.create("TEST_collection",
-                                        CCGPBidInfoInDB(**info_dic))  # todo:
-    except ValueError:
-        LOG.error("li_list is None.")
+    for elem_bid in li_list:
+        issue_time, buyer, agency, province = elem_bid.span.text.split(
+            "|")[:4]
+        info_dic = {
+            crawler.F_URL: elem_bid.a["href"],
+            crawler.F_BID_TYPE: elem_bid.span.strong.text.split()[0],
+            crawler.F_PROJECT_NAME: "".join(elem_bid.find("a").text.strip()),
+            crawler.F_ISSUE_NAME: issue_time.strip(),
+            crawler.F_BUYER: re.search(crawler.RE_BUYER,
+                                       buyer.strip()).group(1),
+            crawler.F_AGENCY: re.search(crawler.RE_AGENCY,
+                                        agency.strip()).group(1),
+            crawler.F_PROVINCE: province.strip(),
+            crawler.F_AMOUNT: get_total_from_url(elem_bid.a["href"]),
+            crawler.F_KEYWORD: params["kw"]}
+        await CCGP_CRAWLER_STORAGE.create("TEST_collection",
+                                          CCGPBidInfoInDB(**info_dic))
 
 
-def get_all_pages_data(key_word, params):
+async def get_all_pages_data(key_word, params):
     """Get information on all its search pages according to one keyword."""
+    await connect()
     params["kw"] = key_word
     page_num = get_page_num(params)
     with tqdm(total=page_num) as tqdm_bar:
         for page in range(1, page_num + 1):
-            get_one_page_data(params, page)
+            await get_one_page_data(params, page)
             tqdm_bar.update()
     LOG.info(f"{key_word} finished")
 
 
 def get_total_from_url(url):
     """Get the bid amount from the url."""
-    time.sleep(1)
     res = SS.get(url)
     soup = BeautifulSoup(res.content, "html.parser")
     elem_content = soup.find("div", attrs={"class": "vF_detail_content"})
