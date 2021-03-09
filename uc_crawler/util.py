@@ -2,7 +2,6 @@
 # !/usr/bin/env python
 """Utilities for uc-crawler-ccgp."""
 
-import sys
 import time
 from datetime import datetime
 
@@ -21,11 +20,12 @@ from utils.log import LOG
 
 def get_page_num(params):
     """Get total page num according to specific keyword."""
+    time.sleep(2)
     res = SS.get(crawler.URL, params=params)
     soup = BeautifulSoup(res.text, "html.parser")
     if soup.find("p", attrs={"class": "pager"}) is None:
         LOG.warning(f"{params['kw']}页数为空")
-        sys.exit()
+        return 0
     page_num = crawler.RE_PAGE.search(
         soup.find("p", attrs={"class": "pager"}).find("script").next)[1]
     return int(page_num)
