@@ -3,6 +3,7 @@
 """The constants for crawler."""
 
 import datetime
+import re
 
 
 START_TIME = datetime.datetime.now().strftime("%Y:%m:%d")
@@ -39,8 +40,9 @@ PARAMETER = {
     "pppStatus": 0,
     "agentName": None,
 }
-RE_AGENCY = "代理机构：(.*)\r"
-RE_AMOUNT = "(预算|成交|中标|（预算）|（成交）|（中标）)金额(（元）|（万元）)?：(.*)"
-RE_BUYER = "采购人：(.*)"
-RE_PAGE = "size:(.*),"
+RE_AGENCY = re.compile("代理机构：(.*)\r")
+RE_AMOUNT = re.compile("(预算|成交|中标|（预算）|（成交）|（中标）)金额(（元）|（万元）)?"
+                       "：(.*)")
+RE_BUYER = re.compile("采购人：(.*)")
+RE_PAGE = re.compile("size:(.*),")
 SESSION_UA = "User-Agent"

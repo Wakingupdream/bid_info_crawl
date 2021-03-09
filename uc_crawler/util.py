@@ -2,7 +2,6 @@
 # !/usr/bin/env python
 """Utilities for uc-crawler-ccgp."""
 
-import re
 import sys
 import time
 from datetime import datetime
@@ -27,9 +26,8 @@ def get_page_num(params):
     if soup.find("p", attrs={"class": "pager"}) is None:
         LOG.warning(f"{params['kw']}页数为空")
         sys.exit()
-    page_num = re.search(crawler.RE_PAGE,
-                         soup.find("p", attrs={"class": "pager"}).find(
-                             "script").next)[1]
+    page_num = crawler.RE_PAGE.search(
+        soup.find("p", attrs={"class": "pager"}).find("script").next)[1]
     return int(page_num)
 
 
@@ -79,10 +77,10 @@ async def get_one_page_data(params, page_index):
                 crawler.F_PROJECT_NAME: "".join(
                     elem_bid.find("a").text.strip()),
                 crawler.F_ISSUE_NAME: issue_time.strip(),
-                crawler.F_BUYER: re.search(crawler.RE_BUYER,
-                                           buyer.strip()).group(1),
-                crawler.F_AGENCY: re.search(crawler.RE_AGENCY,
-                                            agency.strip()).group(1),
+                crawler.F_BUYER: crawler.RE_BUYER.search(buyer.strip()).group(
+                    1),
+                crawler.F_AGENCY: crawler.RE_AGENCY.search(
+                    agency.strip()).group(1),
                 crawler.F_PROVINCE: province.strip(),
                 crawler.F_AMOUNT: get_total_from_url(elem_bid.a["href"]),
                 crawler.F_KEYWORD: params["kw"],
@@ -108,7 +106,7 @@ def get_total_from_url(url):
     soup = BeautifulSoup(res.content, "html.parser")
     elem_content = soup.find("div", attrs={"class": "vF_detail_content"})
     for short_text in elem_content.find_all("p"):
-        match = re.search(crawler.RE_AMOUNT, short_text.text)
+        match = crawler.RE_AMOUNT.search(short_text.text)
         if match:
             return match[3]
     return None
