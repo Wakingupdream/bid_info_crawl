@@ -11,6 +11,7 @@ from bs4 import BeautifulSoup
 from tqdm import tqdm
 
 from constant import crawler
+from constant import database
 from db import connect
 from schemas.crawler import CCGPBidInfoInDB
 from storage.ccgp_crawler import CCGP_CRAWLER_STORAGE
@@ -33,31 +34,26 @@ def get_page_num(params):
 
 
 def get_response(params):
-    """Return the response of session.get ."""
+    """Return the response of session.get."""
     sec = 1
     while True:
         time.sleep(sec)
+        sec += 1
+        if sec == 10:
+            LOG.info(f"{params}")
+            LOG.error("Unresolved Problem.\n")
+            return None
         try:
             res = SS.get(crawler.URL, params=params)
-
         except requests.exceptions.ProxyError as exc:
             LOG.info(f"{exc}")
             LOG.info("*" * 80)
-            LOG.info(f"{res.status_code}")
-            LOG.info(f"{res.text}")
             LOG.info(f"{params}")
             LOG.error("Unresolved Problem.\n")
             SS.headers[crawler.SESSION_UA] = UA.ramdom
             continue
         if len(res.history) == 0:  # todo: Wrong.
             return res
-        sec += 1
-        if sec == 10:
-            LOG.info(f"{res.status_code}")
-            LOG.info(f"{res.text}")
-            LOG.info(f"{params}")
-            LOG.error("Unresolved Problem.\n")
-            return None
 
 
 async def get_one_page_data(params, page_index):
@@ -90,8 +86,10 @@ async def get_one_page_data(params, page_index):
             crawler.F_PROVINCE: province.strip(),
             crawler.F_AMOUNT: get_total_from_url(elem_bid.a["href"]),
             crawler.F_KEYWORD: params["kw"]}
-        await CCGP_CRAWLER_STORAGE.create("TEST_collection",
+        # todo Add filed:updatetime
+        await CCGP_CRAWLER_STORAGE.create(database.COLLECTION_NAME,
                                           CCGPBidInfoInDB(**info_dic))
+        # todo multi thread save data.
 
 
 async def get_all_pages_data(key_word, params):
