@@ -2,6 +2,8 @@
 # !/usr/bin/env python
 """Crawler schema."""
 
+from datetime import datetime
+
 from pydantic import BaseModel
 from pydantic import Field
 from pydantic import HttpUrl
@@ -20,5 +22,5 @@ class CCGPBidInfoInDB(BaseModel):
     keyword: str = Field(None, description=description.KEYWORD)
     project_name: str = Field(None, description=description.PROJECT_NAME)
     province: str = Field(None, description=description.PROVINCE)
-    update_time: str = Field(None, description=description.UPDATE_TIME)
+    update_time: datetime = Field(None, description=description.UPDATE_TIME)
     url: HttpUrl = Field(..., description=description.URL)

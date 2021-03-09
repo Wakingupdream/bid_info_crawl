@@ -16,6 +16,7 @@ F_ISSUE_NAME = "issue_time"
 F_KEYWORD = "keyword"
 F_PROJECT_NAME = "project_name"
 F_PROVINCE = "province"
+F_UPDATE_TIME = "update_time"
 F_URL = "url"
 URL = "http://search.ccgp.gov.cn/bxsearch"
 KEY_WORDS = ["社区", "智能社区", "智慧社区", "商业街", "商圈", "智能商圈", "步行街",
@@ -30,9 +31,9 @@ PARAMETER = {
     "bidType": 0,
     "dbselect": "bidx",
     "kw": None,
-    "start_time": START_TIME,  # TODO(wangyu/crawl_code):Maybe need modify.
+    "start_time": START_TIME,
     "end_time": END_TIME,
-    "timeType": 5,
+    "timeType": 5,  # TODO(wangyu):Set as parameter.
     "displayZone": None,
     "zoneId": None,
     "pppStatus": 0,

@@ -5,6 +5,7 @@
 import re
 import sys
 import time
+from datetime import datetime
 
 import requests
 from bs4 import BeautifulSoup
@@ -52,7 +53,7 @@ def get_response(params):
             LOG.error("Unresolved Problem.\n")
             SS.headers[crawler.SESSION_UA] = UA.ramdom
             continue
-        if len(res.history) == 0:  # todo: Wrong.
+        if len(res.history) == 0:  # TODO(wangyu):wrong but useful.
             return res
 
 
@@ -65,31 +66,30 @@ async def get_one_page_data(params, page_index):
     """
     params["page_index"] = page_index
     res = get_response(params)
-    if res is None:
-        crawler.ERROR_RESPONSE_COUNT += 1
-        sys.exit()  # todo: improvement
-    soup = BeautifulSoup(res.text, "html.parser")
-    elem_bid_list = soup.find("ul", attrs={"class": "vT-srch-result-list-bid"})
-    li_list = elem_bid_list.find_all("li")
-    for elem_bid in li_list:
-        issue_time, buyer, agency, province = elem_bid.span.text.split(
-            "|")[:4]
-        info_dic = {
-            crawler.F_URL: elem_bid.a["href"],
-            crawler.F_BID_TYPE: elem_bid.span.strong.text.split()[0],
-            crawler.F_PROJECT_NAME: "".join(elem_bid.find("a").text.strip()),
-            crawler.F_ISSUE_NAME: issue_time.strip(),
-            crawler.F_BUYER: re.search(crawler.RE_BUYER,
-                                       buyer.strip()).group(1),
-            crawler.F_AGENCY: re.search(crawler.RE_AGENCY,
-                                        agency.strip()).group(1),
-            crawler.F_PROVINCE: province.strip(),
-            crawler.F_AMOUNT: get_total_from_url(elem_bid.a["href"]),
-            crawler.F_KEYWORD: params["kw"]}
-        # todo Add filed:updatetime
-        await CCGP_CRAWLER_STORAGE.create(database.COLLECTION_NAME,
-                                          CCGPBidInfoInDB(**info_dic))
-        # todo multi thread save data.
+    if res:
+        soup = BeautifulSoup(res.text, "html.parser")
+        elem_bid_list = soup.find("ul", attrs={"class":
+                                               "vT-srch-result-list-bid"})
+        li_list = elem_bid_list.find_all("li")
+        for elem_bid in li_list:
+            issue_time, buyer, agency, province = elem_bid.span.text.split(
+                "|")[:4]
+            info_dic = {
+                crawler.F_URL: elem_bid.a["href"],
+                crawler.F_BID_TYPE: elem_bid.span.strong.text.split()[0],
+                crawler.F_PROJECT_NAME: "".join(
+                    elem_bid.find("a").text.strip()),
+                crawler.F_ISSUE_NAME: issue_time.strip(),
+                crawler.F_BUYER: re.search(crawler.RE_BUYER,
+                                           buyer.strip()).group(1),
+                crawler.F_AGENCY: re.search(crawler.RE_AGENCY,
+                                            agency.strip()).group(1),
+                crawler.F_PROVINCE: province.strip(),
+                crawler.F_AMOUNT: get_total_from_url(elem_bid.a["href"]),
+                crawler.F_KEYWORD: params["kw"],
+                crawler.F_UPDATE_TIME: datetime.now()}
+            await CCGP_CRAWLER_STORAGE.create(database.COLLECTION_NAME,
+                                              CCGPBidInfoInDB(**info_dic))
 
 
 async def get_all_pages_data(key_word, params):
