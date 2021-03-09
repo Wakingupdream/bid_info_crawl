@@ -13,7 +13,6 @@ from tqdm import tqdm
 
 from constant import crawler
 from constant import database
-from db import connect
 from schemas.crawler import CCGPBidInfoInDB
 from storage.ccgp_crawler import CCGP_CRAWLER_STORAGE
 from uc_crawler import SS
@@ -94,7 +93,6 @@ async def get_one_page_data(params, page_index):
 
 async def get_all_pages_data(key_word, params):
     """Get information on all its search pages according to one keyword."""
-    await connect()
     params["kw"] = key_word
     page_num = get_page_num(params)
     with tqdm(total=page_num) as tqdm_bar:

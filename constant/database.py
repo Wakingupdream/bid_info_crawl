@@ -3,5 +3,5 @@
 """The constants for database."""
 
 
-COLLECTION_NAME = "CCGP_DATA_test"
+COLLECTION_NAME = "CCGP_DATA"
 DATABASE_NAME = "uc_crawler_ccgp"
