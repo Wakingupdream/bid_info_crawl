@@ -14,3 +14,8 @@ class CCGPBidInfoStorageInterface(ABC):
     @abstractmethod
     async def create(db_collection, create_model):
         """Create one CCGP bid info storage interface."""
+
+    @staticmethod
+    @abstractmethod
+    def read(db_collection):
+        """Interface for read db data."""

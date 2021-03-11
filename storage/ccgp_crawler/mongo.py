@@ -21,3 +21,8 @@ class CCGPBidInfoStorage(CCGPBidInfoStorageInterface):
         input_model = create_model.dict(exclude_none=True)
         await Database.client[DATABASE_NAME][db_collection].insert_one(
             input_model)
+
+    @staticmethod
+    def read(db_collection):
+        """Return CCGP data from db."""
+        return Database.client[DATABASE_NAME][db_collection].find()

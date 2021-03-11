@@ -2,10 +2,11 @@
 # !/usr/bin/env python
 """Utilities for uc-crawler-ccgp."""
 
-import sys
 import time
 from datetime import datetime
 
+import pandas as pd
+import pymongo
 import requests
 from bs4 import BeautifulSoup
 from tqdm import tqdm
@@ -13,6 +14,7 @@ from tqdm import tqdm
 from constant import crawler
 from constant import database
 from schemas.crawler import CCGPBidInfoInDB
+from settings import SETTINGS
 from storage.ccgp_crawler import CCGP_CRAWLER_STORAGE
 from uc_crawler import SS
 from uc_crawler import UA
@@ -21,11 +23,12 @@ from utils.log import LOG
 
 def get_page_num(params):
     """Get total page num according to specific keyword."""
+    time.sleep(2)
     res = SS.get(crawler.URL, params=params)
     soup = BeautifulSoup(res.text, "html.parser")
     if soup.find("p", attrs={"class": "pager"}) is None:
         LOG.warning(f"{params['kw']}页数为空")
-        sys.exit()
+        return 0
     page_num = crawler.RE_PAGE.search(
         soup.find("p", attrs={"class": "pager"}).find("script").next)[1]
     return int(page_num)
@@ -109,3 +112,13 @@ def get_total_from_url(url):
         if match:
             return match[3]
     return None
+
+
+def read_data_from_db():
+    """Read data from mongo and write to xls."""
+    client = pymongo.MongoClient(SETTINGS.db_mongo_uri)
+    collection = client[database.DATABASE_NAME][database.COLLECTION_NAME]
+    data_df = pd.DataFrame(list(collection.find()))
+    date_str = datetime.now().strftime("%Y-%m-%d")
+    data_df.to_excel(f"./bid_info_{date_str}.xls", sheet_name="bid_info",
+                     index=None)
