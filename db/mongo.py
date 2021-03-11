@@ -15,7 +15,7 @@ class Database:
     client: AsyncIOMotorClient = None
 
     @classmethod
-    def connect(cls):
+    async def connect(cls):
         """Connect to mongodb."""
         if SETTINGS.db_mongo_uri:
             cls.client = AsyncIOMotorClient(SETTINGS.db_mongo_uri)
@@ -23,7 +23,7 @@ class Database:
             LOG.error("Connection failed.")
 
     @classmethod
-    def disconnect(cls):
+    async def disconnect(cls):
         """Disconnect from mongodb."""
         if cls.client:
             cls.client.close()
