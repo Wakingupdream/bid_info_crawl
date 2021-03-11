@@ -8,6 +8,7 @@ import asyncio
 from constant import crawler
 from db import connect
 from uc_crawler.util import get_all_pages_data
+from uc_crawler.util import read_data_from_db
 
 
 async def main():
@@ -19,3 +20,4 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+    read_data_from_db()

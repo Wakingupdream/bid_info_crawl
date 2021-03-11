@@ -5,6 +5,8 @@
 import time
 from datetime import datetime
 
+import pandas as pd
+import pymongo
 import requests
 from bs4 import BeautifulSoup
 from tqdm import tqdm
@@ -12,6 +14,7 @@ from tqdm import tqdm
 from constant import crawler
 from constant import database
 from schemas.crawler import CCGPBidInfoInDB
+from settings import SETTINGS
 from storage.ccgp_crawler import CCGP_CRAWLER_STORAGE
 from uc_crawler import SS
 from uc_crawler import UA
@@ -109,3 +112,13 @@ def get_total_from_url(url):
         if match:
             return match[3]
     return None
+
+
+def read_data_from_db():
+    """Read data from mongo and write to xls."""
+    client = pymongo.MongoClient(SETTINGS.db_mongo_uri)
+    collection = client[database.DATABASE_NAME][database.COLLECTION_NAME]
+    data_df = pd.DataFrame(list(collection.find()))
+    date_str = datetime.now().strftime("%Y-%m-%d")
+    data_df.to_excel(f"./bid_info_{date_str}.xls", sheet_name="bid_info",
+                     index=None)

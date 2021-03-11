@@ -31,7 +31,7 @@ PARAMETER = {
     "kw": None,
     "start_time": datetime.datetime.now().strftime("%Y:%m:%d"),
     "end_time": datetime.datetime.now().strftime("%Y:%m:%d"),
-    "timeType": 5,  # TODO(wangyu):Set as parameter.
+    "timeType": 5,
     "displayZone": None,
     "zoneId": None,
     "pppStatus": 0,
