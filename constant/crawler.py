@@ -8,15 +8,25 @@ import re
 
 ERROR_RESPONSE_COUNT = 0
 F_AGENCY = "agency"
+F_AGENCY_CH = "代理机构"
 F_AMOUNT = "amount"
+F_AMOUNT_CH = "成交金额"
 F_BID_TYPE = "bid_type"
+F_BID_TYPE_CH = "中标类型"
 F_BUYER = "buyer"
-F_ISSUE_NAME = "issue_time"
+F_BUYER_CH = "采购人"
+F_ISSUE_TIME = "issue_time"
+F_ISSUE_TIME_CH = "发布时间"
 F_KEYWORD = "keyword"
+F_KEYWORD_CH = "关键词"
 F_PROJECT_NAME = "project_name"
+F_PROJECT_NAME_CH = "项目名称"
 F_PROVINCE = "province"
+F_PROVINCE_CH = "省份"
 F_UPDATE_TIME = "update_time"
+F_UPDATE_TIME_CH = "更新时间"
 F_URL = "url"
+F_URL_CH = "网页链接"
 KEY_WORDS = ["社区", "智能社区", "智慧社区", "商业街", "商圈", "智能商圈", "步行街", "景区", "智能景区",
              "智慧景区", "文旅", "机场", "智慧文旅"]
 PARAMETER = {
@@ -31,7 +41,7 @@ PARAMETER = {
     "kw": None,
     "start_time": datetime.datetime.now().strftime("%Y:%m:%d"),
     "end_time": datetime.datetime.now().strftime("%Y:%m:%d"),
-    "timeType": 5,
+    "timeType": 2,
     "displayZone": None,
     "zoneId": None,
     "pppStatus": 0,

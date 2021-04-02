@@ -2,8 +2,8 @@
 # !/usr/bin/env python
 """Utilities for uc-crawler-ccgp."""
 
+import datetime
 import time
-from datetime import datetime
 
 import pandas as pd
 import pymongo
@@ -68,7 +68,7 @@ async def get_one_page_data(params, page_index):
     if res:
         soup = BeautifulSoup(res.text, "html.parser")
         elem_bid_list = soup.find("ul", attrs={"class":
-                                               "vT-srch-result-list-bid"})
+                                  "vT-srch-result-list-bid"})
         li_list = elem_bid_list.find_all("li")
         for elem_bid in li_list:
             issue_time, buyer, agency, province = elem_bid.span.text.split(
@@ -78,7 +78,7 @@ async def get_one_page_data(params, page_index):
                 crawler.F_BID_TYPE: elem_bid.span.strong.text.split()[0],
                 crawler.F_PROJECT_NAME: "".join(
                     elem_bid.find("a").text.strip()),
-                crawler.F_ISSUE_NAME: issue_time.strip(),
+                crawler.F_ISSUE_TIME: issue_time.strip(),
                 crawler.F_BUYER: crawler.RE_BUYER.search(buyer.strip()).group(
                     1),
                 crawler.F_AGENCY: crawler.RE_AGENCY.search(
@@ -86,7 +86,7 @@ async def get_one_page_data(params, page_index):
                 crawler.F_PROVINCE: province.strip(),
                 crawler.F_AMOUNT: get_total_from_url(elem_bid.a["href"]),
                 crawler.F_KEYWORD: params["kw"],
-                crawler.F_UPDATE_TIME: datetime.now()}
+                crawler.F_UPDATE_TIME: datetime.datetime.now()}
             await CCGP_CRAWLER_STORAGE.create(database.COLLECTION_NAME,
                                               CCGPBidInfoInDB(**info_dic))
 
@@ -119,6 +119,30 @@ def read_data_from_db():
     client = pymongo.MongoClient(SETTINGS.db_mongo_uri)
     collection = client[database.DATABASE_NAME][database.COLLECTION_NAME]
     data_df = pd.DataFrame(list(collection.find()))
-    date_str = datetime.now().strftime("%Y-%m-%d")
-    data_df.to_excel(f"./bid_info_{date_str}.xls", sheet_name="bid_info",
+    data_df = data_df.drop_duplicates(subset=[crawler.F_URL,
+                                              crawler.F_KEYWORD])
+    data_df = data_df.drop("_id", axis=1)
+    data_df.rename(columns={crawler.F_AGENCY: crawler.F_AGENCY_CH,
+                            crawler.F_AMOUNT: crawler.F_AMOUNT_CH,
+                            crawler.F_BID_TYPE: crawler.F_BID_TYPE_CH,
+                            crawler.F_BUYER: crawler.F_BUYER_CH,
+                            crawler.F_ISSUE_TIME: crawler.F_ISSUE_TIME_CH,
+                            crawler.F_KEYWORD: crawler.F_KEYWORD_CH,
+                            crawler.F_PROJECT_NAME: crawler.F_PROJECT_NAME_CH,
+                            crawler.F_PROVINCE: crawler.F_PROVINCE_CH,
+                            crawler.F_UPDATE_TIME: crawler.F_UPDATE_TIME_CH,
+                            crawler.F_URL: crawler.F_URL_CH}, inplace=True)
+    data_df = data_df[[crawler.F_PROJECT_NAME_CH, crawler.F_KEYWORD_CH,
+                       crawler.F_BID_TYPE_CH, crawler.F_AGENCY_CH,
+                       crawler.F_BUYER_CH, crawler.F_ISSUE_TIME_CH,
+                       crawler.F_PROVINCE_CH, crawler.F_AMOUNT_CH,
+                       crawler.F_URL_CH, crawler.F_UPDATE_TIME_CH]]
+    latest_7_days = (datetime.datetime.now() - datetime.timedelta(days=7)). \
+        strftime("%Y.%m.%d")
+    data_lastest_7_days = data_df[data_df[crawler.F_ISSUE_TIME_CH] >=
+                                  latest_7_days]
+    file_suffix = datetime.datetime.now().strftime("%Y_%m_%d")
+    data_df.to_excel(f"./bid_info_{file_suffix}.xls", sheet_name="bid_info",
                      index=None)
+    data_lastest_7_days.to_excel(f"./bid_info_last_week_{file_suffix}.xls",
+                                 sheet_name="bid_info", index=None)
